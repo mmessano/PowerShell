@@ -1,9 +1,9 @@
 ﻿# DMart-UpdateDB.ps1
 
 param( 
-	$SQLServer = 'PSQLRPT24',
-	$ScriptDir = '\\xfs3\DataManagement\Footprints\79866',
-	$Beta = 6,
+	$SQLServer = 'STGSQLDOC710',
+	$ScriptDir = '\\xfs3\DataManagement\Footprints\84284',
+	$Beta = 1,
 	[String[]] $DatabaseList,
 	$FilePrefix = 'Log',
 	[switch]$Log
@@ -26,7 +26,7 @@ if ($Databases) {
 			if ($StageScripts) {
 				foreach ( $StageScript IN $StageScripts ) {
 					Invoke-SQLCMD -ServerInstance $SQLServer -Database $i[0] -InputFile $StageScript.FullName
-					Write-Host "`tApplied " $StageScript.fullname "to "$i[0]"."
+					Write-Host "`tApplied " $StageScript.fullname "to "$SQLServer $i[0]"."
 				}
 			}
 		}
@@ -35,7 +35,7 @@ if ($Databases) {
 			if ($DataScripts) {
 				foreach ( $DataScript IN $DataScripts ) {
 					Invoke-SQLCMD -ServerInstance $SQLServer -Database $i[0] -InputFile $DataScript.FullName
-					Write-Host "`tApplied " $DataScript.FullName "to "$i[0]"."
+					Write-Host "`tApplied " $DataScript.FullName "to "$SQLServer $i[0]"."
 				}
 			}
 		}
