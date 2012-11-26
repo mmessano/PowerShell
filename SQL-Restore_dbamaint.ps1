@@ -2,7 +2,7 @@
 
 param( 
 	$SQLServer,
-	$BAKFile = '\\xsqlutil18\e$\MSSQL10.MSSQLSERVER\MSSQL\BAK\dbamaint\dbamaint_backup_2012_11_25_230001_7339465.bak',
+	$BAKFile = '\\xsqlutil18\e$\MSSQL10.MSSQLSERVER\MSSQL\dbamaint_empty_11_26_2012.bak',
 	$FilePrefix = 'Log',
 	[switch]$Log
 )
@@ -42,14 +42,47 @@ function Run-Query()
 	$DataSet.Tables | Select-Object -ExpandProperty Rows
 }
 
-$OwnerUpdate = "EXEC sp_changedbowner 'sa';"
+$Truncdbamaint = "
+	DECLARE @Table SYSNAME
+	DECLARE @CMD NVARCHAR(256)
+
+	DECLARE dTables CURSOR FOR
+		SELECT name FROM sys.tables
+		WHERE is_ms_shipped = 0
+		AND Name != 'SQLDirPaths'; -- contains a foreign key and is truncated by the sproc that uses it
+		
+	OPEN dTables;
+	FETCH NEXT FROM dTables INTO @Table;
+		
+	WHILE @@FETCH_STATUS = 0
+		BEGIN
+		
+		SELECT @CMD = 'TRUNCATE TABLE [' + @Table + ']'
+		PRINT @CMD;
+		exec(@CMD);
+		FETCH NEXT FROM dTables INTO @Table;
+		END;
+		
+	CLOSE dTables;
+	DEALLOCATE dTables;"
+	
+$OwnerUpdate = "EXEC sp_changedbowner 'sa';"	
+$UpdateStats = "exec sp_updatestats;"
+$CheckDB = "DBCC CHECKDB WITH DATA_PURITY;"
+
+
+
 
 foreach ( $Server IN $SQLServer )
 	{
-	
+	# restore dbamaint backup file
 	Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection
 	
+	#fix owner, truncate all tables, update the stats and run DBCC
 	Run-Query -SqlQuery $OwnerUpdate -SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $Truncdbamaint -SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $UpdateStats -SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $CheckDB -SqlServer $Server -SqlCatalog dbamaint
 	
 	}
 
