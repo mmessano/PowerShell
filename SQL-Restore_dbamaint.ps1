@@ -9,7 +9,8 @@ param(
 
 $ScriptName = [system.io.path]::GetFilenameWithoutExtension($MyInvocation.InvocationName)
 
-IF (!$SQLServer )
+# check input variable.  if empty read server list from a text file
+if (!$SQLServer )
 {
 	$SQLServer = Get-Content "E:\Dexma\data\ServerList.txt"
 }
@@ -42,6 +43,7 @@ function Run-Query()
 	$DataSet.Tables | Select-Object -ExpandProperty Rows
 }
 
+# SQL Queries
 $Truncdbamaint = "
 	DECLARE @Table SYSNAME
 	DECLARE @CMD NVARCHAR(256)
@@ -79,10 +81,10 @@ foreach ( $Server IN $SQLServer )
 	Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection
 	
 	#fix owner, truncate all tables, update the stats and run DBCC
-	Run-Query -SqlQuery $OwnerUpdate -SqlServer $Server -SqlCatalog dbamaint
-	Run-Query -SqlQuery $Truncdbamaint -SqlServer $Server -SqlCatalog dbamaint
-	Run-Query -SqlQuery $UpdateStats -SqlServer $Server -SqlCatalog dbamaint
-	Run-Query -SqlQuery $CheckDB -SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $OwnerUpdate 	-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $Truncdbamaint 	-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $UpdateStats 	-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $CheckDB 		-SqlServer $Server -SqlCatalog dbamaint
 	
 	}
 
