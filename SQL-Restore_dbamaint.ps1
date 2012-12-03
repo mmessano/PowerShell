@@ -67,7 +67,25 @@ $Truncdbamaint = "
 		
 	CLOSE dTables;
 	DEALLOCATE dTables;"
-	
+
+$DrivesQuery = "
+DECLARE @drives TABLE
+	( 
+	drive CHAR(1),
+	free  VARCHAR(16)
+	);
+INSERT INTO @drives
+			( drive
+			, free
+			)
+            
+EXEC MASTER..Xp_fixeddrives
+
+SELECT drive
+FROM   @drives
+WHERE drive NOT LIKE '%C%'
+ORDER BY 1"
+
 $OwnerUpdate = "EXEC sp_changedbowner 'sa';"	
 $UpdateStats = "exec sp_updatestats;"
 $CheckDB = "DBCC CHECKDB WITH DATA_PURITY;"
@@ -77,14 +95,45 @@ $CheckDB = "DBCC CHECKDB WITH DATA_PURITY;"
 
 foreach ( $Server IN $SQLServer )
 	{
+	# determine drive letters
+	$Drives = Run-Query -SqlQuery $DrivesQuery -SqlServer $Server -SqlCatalog master | Select drive
+	#Write-Host $Server $Drives 
+	
+	if ( $Drives.Count -gt 1 ) 
+	{
+		Write-Host "Multiple drive letters found."
+		foreach ( $Drive IN $Drives ) 
+			{
+			#Write-Host $($Drive.Drive)
+			if ( $($Drive.Drive) -eq 'D' ) 
+				{
+					Write-Host "D drive found."
+					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+				}
+			ELSEIF ( $($Drive.Drive) -eq 'E' )
+				{
+					Write-Host "E drive found."
+					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+				}
+			}
+	}
+	ELSE
+	{
+		Write-Host "Single drive letter found."
+		#Write-Host $($Drives.Drive)
+		Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drives.Drive) -LDrive $($Drives.Drive)"
+		Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drives.Drive) -LDrive $($Drives.Drive)
+	}
 	# restore dbamaint backup file
-	Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection
+	#Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection
 	
 	#fix owner, truncate all tables, update the stats and run DBCC
-	Run-Query -SqlQuery $OwnerUpdate 	-SqlServer $Server -SqlCatalog dbamaint
-	Run-Query -SqlQuery $Truncdbamaint 	-SqlServer $Server -SqlCatalog dbamaint
-	Run-Query -SqlQuery $UpdateStats 	-SqlServer $Server -SqlCatalog dbamaint
-	Run-Query -SqlQuery $CheckDB 		-SqlServer $Server -SqlCatalog dbamaint
+	#Run-Query -SqlQuery $OwnerUpdate 	-SqlServer $Server -SqlCatalog dbamaint
+	#Run-Query -SqlQuery $Truncdbamaint -SqlServer $Server -SqlCatalog dbamaint
+	#Run-Query -SqlQuery $UpdateStats 	-SqlServer $Server -SqlCatalog dbamaint
+	#Run-Query -SqlQuery $CheckDB 		-SqlServer $Server -SqlCatalog dbamaint
 	
 	}
 
