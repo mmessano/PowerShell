@@ -1,4 +1,6 @@
 ﻿# SQL-Restore_dbamaint.ps1
+# mmessano
+# 11-29-2012
 
 param( 
 	$SQLServer,
@@ -7,7 +9,7 @@ param(
 	[switch]$Log
 )
 
-$ScriptName = [system.io.path]::GetFilenameWithoutExtension($MyInvocation.InvocationName)
+#$ScriptName = [system.io.path]::GetFilenameWithoutExtension($MyInvocation.InvocationName)
 
 # check input variable.  if empty read server list from a text file
 if (!$SQLServer )
@@ -117,6 +119,18 @@ foreach ( $Server IN $SQLServer )
 					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
 					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
 				}
+			ELSEIF ( $($Drive.Drive) -eq 'F' )
+				{
+					Write-Host "F drive found."
+					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+				}
+			ELSEIF ( $($Drive.Drive) -eq 'G' )
+				{
+					Write-Host "G drive found."
+					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+				}
 			}
 	}
 	ELSE
@@ -126,14 +140,12 @@ foreach ( $Server IN $SQLServer )
 		Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drives.Drive) -LDrive $($Drives.Drive)"
 		Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drives.Drive) -LDrive $($Drives.Drive)
 	}
-	# restore dbamaint backup file
-	#Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection
 	
 	#fix owner, truncate all tables, update the stats and run DBCC
-	#Run-Query -SqlQuery $OwnerUpdate 	-SqlServer $Server -SqlCatalog dbamaint
-	#Run-Query -SqlQuery $Truncdbamaint -SqlServer $Server -SqlCatalog dbamaint
-	#Run-Query -SqlQuery $UpdateStats 	-SqlServer $Server -SqlCatalog dbamaint
-	#Run-Query -SqlQuery $CheckDB 		-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $OwnerUpdate 	-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $Truncdbamaint 	-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $UpdateStats 	-SqlServer $Server -SqlCatalog dbamaint
+	Run-Query -SqlQuery $CheckDB 		-SqlServer $Server -SqlCatalog dbamaint
 	
 	}
 
