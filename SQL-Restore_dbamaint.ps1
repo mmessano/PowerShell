@@ -106,32 +106,44 @@ foreach ( $Server IN $SQLServer )
 		Write-Host "Multiple drive letters found."
 		foreach ( $Drive IN $Drives ) 
 			{
-			#Write-Host $($Drive.Drive)
-			if ( $($Drive.Drive) -eq 'D' ) 
-				{
-					Write-Host "D drive found."
-					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
-					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
-				}
-			ELSEIF ( $($Drive.Drive) -eq 'E' )
-				{
-					Write-Host "E drive found."
-					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
-					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
-				}
-			ELSEIF ( $($Drive.Drive) -eq 'F' )
-				{
-					Write-Host "F drive found."
-					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
-					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
-				}
-			ELSEIF ( $($Drive.Drive) -eq 'G' )
-				{
-					Write-Host "G drive found."
-					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
-					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
-				}
+			switch ($Drive) 
+				{ 
+			    "D" { Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive) }
+			    "E" { Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive) }
+			    "F" { Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive) }
+				"G" { Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive) }
+				"H" { Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive) }
+    			}
 			}
+		
+#		foreach ( $Drive IN $Drives ) 
+#			{
+#			#Write-Host $($Drive.Drive)
+#			if ( $($Drive.Drive) -eq 'D' ) 
+#				{
+#					Write-Host "D drive found."
+#					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+#					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+#				}
+#			ELSEIF ( $($Drive.Drive) -eq 'E' )
+#				{
+#					Write-Host "E drive found."
+#					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+#					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+#				}
+#			ELSEIF ( $($Drive.Drive) -eq 'F' )
+#				{
+#					Write-Host "F drive found."
+#					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+#					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+#				}
+#			ELSEIF ( $($Drive.Drive) -eq 'G' )
+#				{
+#					Write-Host "G drive found."
+#					Write-Host "Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)"
+#					Restore-SQLdatabase -SQLServer $Server -SQLDatabase dbamaint -Path $BAKFile -TrustedConnection -DDrive $($Drive.Drive) -LDrive $($Drive.Drive)
+#				}
+#			}
 	}
 	ELSE
 	{
