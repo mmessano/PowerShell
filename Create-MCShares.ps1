@@ -287,6 +287,7 @@ switch ($ENV)
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
 										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
+									--AND server_name LIKE 'FinRep%'
 									ORDER BY server_name
 									"; 
     		}
@@ -318,14 +319,14 @@ if ( $domain -eq "mortgagecadence.internal" ) {
 ELSEIF ( $domain -eq "mcfinale.net" ) {
 	$DUACE 			= New-ACE -Name "Domain Users" -Domain MCFinale -Permission Read -Group
 	$PerfmonACE 	= New-Ace -Name svc_perfmon -Domain MCFinale -Permission Full
-	$mmessanoACE 	= New-Ace -Name mmessano -Domain MCFinale -Permission Full
-	#$jmckayACE		= New-Ace -Name jmckay -Domain MCFinale -Permission Full
-	#$rhaagACE		= New-Ace -Name rhaag -Domain MCFinale -Permission Full
-	#$tdodsonACE	= New-Ace -Name tdodson -Domain MCFinale -Permission Full
-	#$sbrownACE		= New-Ace -Name sbrown -Domain MCFinale -Permission Full
-	$jfalconerACE	= New-Ace -Name jfalconer -Domain MCFinale -Permission Full
+	$mmessanoACE 	= New-Ace -Name mm_admin -Domain MCFinale -Permission Full
+	$jmckayACE		= New-Ace -Name jm_admin -Domain MCFinale -Permission Full
+	$rhaagACE		= New-Ace -Name rh_admin -Domain MCFinale -Permission Full
+	$tdodsonACE		= New-Ace -Name td_admin -Domain MCFinale -Permission Full
+	$sbrownACE		= New-Ace -Name sb_admin -Domain MCFinale -Permission Full
+	$jfalconerACE	= New-Ace -Name jf_admin -Domain MCFinale -Permission Full
 	
-	$MCACES			= ($DUACE,$PerfmonACE,$mmessanoACE,$jfalconerACE)
+	$MCACES			= ($DUACE,$PerfmonACE,$mmessanoACE,$jmckayACE,$rhaagACE,$tdodsonACE,$sbrownACE,$jfalconerACE)
 	}
 
 # begin updating servers
