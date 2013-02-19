@@ -6,9 +6,12 @@ param(
 	, $ReportFileName = "E:\Dexma\FreeSpace.htm"
 	, $EmailTo = "mmessano@primealliancesolutions.com"
 	, $EmailFrom = "mmessano@primealliancesolutions.com"
-	, $EmailSubject = "Disk Space Report"
+	, $EmailSubject = "Disk Space Report for $Domain"
 	, $SMTPServer = "10.0.5.199"
 )
+
+#clear the console
+clear
 
 # retrieve the domain information
 $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain();
@@ -141,10 +144,54 @@ writeHtmlHeader $ReportFileName
 
 foreach ($server in Get-Content $serverlist)
 {
-	$ServerName = [System.Net.Dns]::gethostentry($server).hostname
+	try {
+		$ServerName = [System.Net.Dns]::gethostentry($server).hostname
+		}
+	catch [System.DivideByZeroException] {
+		Write-Host "DivideByZeroException: "
+		$_.Exception
+		Write-Host
+		if ($_.Exception.InnerException) {
+			Write-Host "Inner Exception: "
+			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
+			}
+		}
+	catch [System.UnauthorizedAccessException] {
+		Write-Host "System.UnauthorizedAccessException"
+		$_.Exception
+		Write-Host
+		if ($_.Exception.InnerException) {
+			Write-Host "Inner Exception: "
+			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
+			}
+		}
+	catch [System.Management.Automation.RuntimeException] {
+		Write-Host "RuntimeException"
+		$_.Exception
+		Write-Host
+		if ($_.Exception.InnerException) {
+			Write-Host "Inner Exception: "
+			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
+			}
+		}	
+	catch [System.Exception] {
+		Write-Host "Exception connecting to $Server" 
+		$_.Exception
+		Write-Host
+		if ($_.Exception.InnerException) {
+			Write-Host "Inner Exception: "
+			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
+			}
+		}	
+	
+	
+	if ($ServerName -eq $null) {
+			$ServerName = $Server
+			}
+			
 	Add-Content $ReportFileName "<table width='100%'><tbody>"
 	Add-Content $ReportFileName "<tr bgcolor='#CCCCCC'>"
-	Add-Content $ReportFileName "<td width='100%' align='center' colSpan=6><font face='tahoma' color='#003399' size='2'><strong> $ServerName </strong></font></td>"
+	Add-Content $ReportFileName "<td width='100%' align='center' colSpan=6><font face='tahoma' color='#003399' size='2'><strong> $ServerName ($Server) </strong></font></td>"
 	Add-Content $ReportFileName "</tr>"
 
 	writeTableHeader $ReportFileName
@@ -156,11 +203,12 @@ foreach ($server in Get-Content $serverlist)
 		Write-Host  $ServerName $item.DeviceID  $item.VolumeName $item.FreeSpace $item.Size
 		writeDiskInfo $ReportFileName $item.DeviceID $item.VolumeName $item.FreeSpace $item.Size
 	}
+	$ServerName = $NULL
 }
 
 writeHtmlFooter $ReportFileName
 $date = ( get-date ).ToString('yyyy/MM/dd')
-$EmailSubject = $EmailSubject + "-" + $date
+$EmailSubject = $EmailSubject + " for " + $Domain + " on " + $date
 
 Send-MailMessage -To 			$EmailTo `
 				-Subject 		$EmailSubject `

@@ -27,7 +27,7 @@ switch ($ENV)
 									"; 
     		}
 	
-	"PA-STAGE"{ $DBServer 		= 	"FINREP01V"; 
+	"PA-STAGE"{ $DBServer 		= 	"STGSQLCBS620"; 
 				$ArchiveDrive	=	"E"
 				$DB 			= 	"Status"; 
 				$ServerQuery	= 	"SELECT server_name
@@ -169,5 +169,29 @@ Foreach($s in $servers)
    	}
 	else {
 		"Connection to $ServerName succeeded!"
+		"Doing a GetHostEntry on $($s.server_name)..."
+		try {
+			$ServerName = [System.Net.Dns]::gethostentry($server).hostname
+			}	
+		catch [System.SystemException] {
+			Write-Host "Exception connecting to $Server(System.SystemException)" 
+			$_.Exception
+			# $_.Exception | Get-Member # show the exception's members to see what is available
+			Write-Host
+			if ($_.Exception.InnerException) {
+				Write-Host "Inner Exception: "
+				$_.Exception.InnerException # display the exception's InnerException if it has one
+				}
+			}
+		catch [System.Exception] {
+			Write-Host "Exception connecting to $Server(System.Exception)" 
+			$_.Exception
+			# $_.Exception | Get-Member # show the exception's members to see what is available
+			Write-Host
+			if ($_.Exception.InnerException) {
+				Write-Host "Inner Exception: "
+				$_.Exception.InnerException # display the exception's InnerException if it has one
+				}
+			}	
 	}
 }

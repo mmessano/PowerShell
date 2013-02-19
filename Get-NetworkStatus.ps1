@@ -122,22 +122,22 @@ Process {
     Foreach ($name in $computername) 
     {
         #set some default values
-        $dns=$False
-        $dnsHostName=$Null
-        $IP=$Null
-        $ReverseVerify=$False    
-        $CShare=$False
-        $AdminShare=$False
-        $WMIVerify=$False
-        $WinRMVerify=$False
-        $AdapterHostname=$Null
-        $DNSDomain=$Null
-        $DHCPServer=$Null
-        $LeaseObtained=$Null
-        $LeaseExpires=$Null
+        $dns				= $False
+        $dnsHostName		= $Null
+        $IP					= $Null
+        $ReverseVerify		= $False    
+        $CShare				= $False
+        $AdminShare			= $False
+        $WMIVerify			= $False
+        $WinRMVerify		= $False
+        $AdapterHostname	= $Null
+        $DNSDomain			= $Null
+        $DHCPServer			= $Null
+        $LeaseObtained		= $Null
+        $LeaseExpires		= $Null
 
         #test connection
-        $Ping=Test-Connection $name -Quiet
+        $Ping = Test-Connection $name -Quiet
 
         #resolve DNS Name
         $dns=[system.net.dns]::GetHostEntry("$name")
@@ -145,9 +145,9 @@ Process {
         if ($dns)
         {
             Write-Verbose ($dns | out-String)
-            $dnshostname=$dns.hostname
+            $dnshostname = $dns.hostname
             #filter out IPv6 addresses
-            $IPv4=$dns.addresslist | where {$_.AddressFamily -eq "Internetwork"}
+            $IPv4 = $dns.addresslist | where {$_.AddressFamily -eq "Internetwork"}
             if (($IPv4 | Measure-Object).Count -gt 1)
             {
                 #only take the first address
@@ -167,13 +167,12 @@ Process {
         {
             #verify reverse lookup
             Write-Verbose "Reverse lookup check"
-            $RevIP="{0}.in-addr.arpa" -f (New-ReverseIP $IP)
+            $RevIP = "{0}.in-addr.arpa" -f (New-ReverseIP $IP)
             Write-Verbose $revIP
-            $DNSServer=Get-DefaultDNSServer
-            $filter="OwnerName = ""$RevIP"" AND RecordData=""$DNSHostName."""
+            $DNSServer = Get-DefaultDNSServer
+            $filter = "OwnerName = ""$RevIP"" AND RecordData=""$DNSHostName."""
             Write-Verbose "Querying $DNSServer for $filter"
-            $record=Get-WmiObject -Class "MicrosoftDNS_PTRType" -Namespace "Root\MicrosoftDNS" `
-            -ComputerName $DNSServer -filter $filter
+            $record = Get-WmiObject -Class "MicrosoftDNS_PTRType" -Namespace "Root\MicrosoftDNS" -ComputerName $DNSServer -filter $filter
             if ($record)
             {
                 Write-Verbose ($record | Out-String)
@@ -185,19 +184,19 @@ Process {
             }
             #Get Network adapter configuration for primary IP
             Write-Verbose "Getting WMI NetworkAdapterConfiguration for address $IP"
-            $configs=Get-WmiObject -Class Win32_NetworkAdapterConfiguration -filter "IPEnabled=True" -computername $name
+            $configs = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -filter "IPEnabled=True" -computername $name
            
             #get the adapter with the matching primary IP
-            $adapter=$configs | where {$_.IPAddress -contains $IP}
+            $adapter = $configs | where {$_.IPAddress -contains $IP}
             Write-Verbose ($adapter | Out-String)
 
             if ($adapter) 
             {
-                $AdapterHostname=$adapter.DNSHostname
-                $DNSDomain=$adapter.DNSDomain
-                $DHCPServer=$adapter.DHCPServer
-                $LeaseObtained=$adapter.ConvertToDateTime($adapter.dhcpleaseobtained)
-                $LeaseExpires=$adapter.ConvertToDateTime($adapter.dhcpleaseExpires)
+                $AdapterHostname	= $adapter.DNSHostname
+                $DNSDomain			= $adapter.DNSDomain
+                $DHCPServer			= $adapter.DHCPServer
+                $LeaseObtained		= $adapter.ConvertToDateTime($adapter.dhcpleaseobtained)
+                $LeaseExpires		= $adapter.ConvertToDateTime($adapter.dhcpleaseExpires)
             }
           
         } #close if $IP
@@ -208,49 +207,49 @@ Process {
 
         #Verify WMI service
         Write-Verbose "Validating WinMgmt Service on $name"
-        $wmisvc=Get-Service -Name Winmgmt -ComputerName $name 
+        $wmisvc = Get-Service -Name Winmgmt -ComputerName $name 
         if ($wmisvc.status -eq "Running") {$WMIVerify=$True}
 
         #validate WinRM
         Write-Verbose "Validating WinRM Service on $name"
-        $WinRMSvc=Get-Service -Name WinRM -computername $name
+        $WinRMSvc = Get-Service -Name WinRM -computername $name
         if ($WinRMSvc.status -eq "Running") {$WinRMVerify=$True}
                 
         #Get MAC Address for the computer. There are several ways to get this.
         #I'm taking the easy way.
         Write-Verbose "Retrieving MAC address from $name"
         #MAC Address regular expression pattern
-        [regex]$MACPattern="([0-9a-fA-F][0-9a-fA-F]-){5}([0-9a-fA-F][0-9a-fA-F])"
+        [regex]$MACPattern = "([0-9a-fA-F][0-9a-fA-F]-){5}([0-9a-fA-F][0-9a-fA-F])"
         #run NBTSTAT.EXE and save results
-        $nbt=nbtstat -a $name
+        $nbt = nbtstat -a $name
         #parse out the MAC Address
-        $MACAddress=($MACPattern.match($nbt)).Value   
+        $MACAddress = ($MACPattern.match($nbt)).Value   
 
         Write-Verbose "Creating object"
         #Write a custom object to the pipeline
         New-Object -TypeName PSObject -Property @{
-            Computername=$name
-            AdapterHostname=$adapterHostName
-            DNSHostName=$dnsHostname
-            DNSDomain=$DNSDomain
-            IPAddress=$IP
-            ReverseLookup=$ReverseVerify
-            DHCPServer=$DHCPServer
-            LeaseObtained=$LeaseObtained
-            LeaseExpires=$LeaseExpires
-            MACAddress=$MACAddress
-            AdminShare=$AdminShare
-            CShare=$CShare
-            WMI=$WMIVerify
-            Ping=$Ping
-            WinRM=$WinRMVerify
+            Computername	= $name
+            AdapterHostname	= $adapterHostName
+            DNSHostName		= $dnsHostname
+            DNSDomain		= $DNSDomain
+            IPAddress		= $IP
+            ReverseLookup	= $ReverseVerify
+            DHCPServer		= $DHCPServer
+            LeaseObtained	= $LeaseObtained
+            LeaseExpires	= $LeaseExpires
+            MACAddress		= $MACAddress
+            AdminShare		= $AdminShare
+            CShare			= $CShare
+            WMI				= $WMIVerify
+            Ping			= $Ping
+            WinRM			= $WinRMVerify
         } #close Property hash table
     } #close Foreach
 } #close Process
 
 End 
 {
-    $ErrorActionPreference="Continue"
+    $ErrorActionPreference = "Continue"
     Write-Verbose "Finished."
 } #close End
 
