@@ -155,6 +155,8 @@ foreach ($server in Get-Content $serverlist)
 			Write-Host "Inner Exception: "
 			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
 			}
+		"Continuing..."
+		continue
 		}
 	catch [System.UnauthorizedAccessException] {
 		Write-Host "System.UnauthorizedAccessException"
@@ -164,6 +166,8 @@ foreach ($server in Get-Content $serverlist)
 			Write-Host "Inner Exception: "
 			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
 			}
+		"Continuing..."
+		continue
 		}
 	catch [System.Management.Automation.RuntimeException] {
 		Write-Host "RuntimeException"
@@ -173,6 +177,8 @@ foreach ($server in Get-Content $serverlist)
 			Write-Host "Inner Exception: "
 			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
 			}
+		"Continuing..."
+		continue
 		}	
 	catch [System.Exception] {
 		Write-Host "Exception connecting to $Server" 
@@ -182,6 +188,8 @@ foreach ($server in Get-Content $serverlist)
 			Write-Host "Inner Exception: "
 			$_.Exception.InnerException.Message # display the exception's InnerException if it has one
 			}
+		"Continuing..."
+		continue
 		}	
 	
 	
@@ -217,3 +225,5 @@ Send-MailMessage -To 			$EmailTo `
 				-Attachments 	$ReportFileName
 
 # .\Report-DiskSpaceUsage.ps1 -ServerList D:\Operations\ServerList.txt -ReportFileName D:\Operations\MC-DiskReport.htm
+# .\Report-DiskSpaceUsage.ps1 -ServerList C:\Operations\Servers.txt -ReportFileName C:\Operations\Finale-DiskReport.htm
+# .\Report-DiskSpaceUsage.ps1 -ServerList E:\Dexma\Servers.txt -ReportFileName E:\Dexma\PA-PROD-DiskReport.htm

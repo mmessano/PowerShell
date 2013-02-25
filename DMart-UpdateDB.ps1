@@ -1,9 +1,9 @@
 ﻿# DMart-UpdateDB.ps1
 
 param( 
-	$SQLServer = 'STGSQLDOC710',
+	$SQLServer = 'PSQLRPT24',
 	$ScriptDir = '\\xfs3\DataManagement\Footprints\30617',
-	$Beta = 1,
+	$Beta = 3,
 	[String[]] $DatabaseList,
 	$FilePrefix = 'Log',
 	[switch]$Log
