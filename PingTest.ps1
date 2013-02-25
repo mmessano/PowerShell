@@ -1,5 +1,7 @@
 ﻿# PingTest.ps1
 
+$Errors.Clear;
+
 $ENV = $args[0]
 
 if ($ENV -eq $null){
@@ -29,7 +31,7 @@ switch ($ENV)
 	
 	"PA-STAGE"{ $DBServer 		= 	"STGSQLCBS620"; 
 				$ArchiveDrive	=	"E"
-				$DB 			= 	"Status"; 
+				$DB 			= 	"StatusStage"; 
 				$ServerQuery	= 	"SELECT server_name
 										, domain
 										, ip_address
@@ -48,7 +50,7 @@ switch ($ENV)
 	
 	"PA-IMP"{ 	$DBServer 		= 	"ISQLDEV610"; 
 				$ArchiveDrive	=	"E"
-				$DB 			= 	"StatusStage"; 
+				$DB 			= 	"StatusImp"; 
 				$ServerQuery	= 	"SELECT server_name
 										, domain
 										, ip_address
@@ -148,9 +150,15 @@ switch ($ENV)
 
 $Servers = ( Invoke-SQLCmd -query $ServerQuery -Server $DBServer -Database $DB )
 
+$Count = $Servers.Count
+
+# create NULL array
+$ServerProperties = @()
+
 Foreach($s in $servers)
 {
 	$ServerName = $($s.dns_host_name)
+	$ServerIP = $($s.ip_address)
 	if(!(Test-Connection -Cn $ServerName -BufferSize 16 -Count 1 -ea 0 -quiet)){
 		"Problem connecting to $ServerName"
 		"Flushing DNS"
@@ -168,10 +176,10 @@ Foreach($s in $servers)
 			}
    	}
 	else {
-		"Connection to $ServerName succeeded!"
-		"Doing a GetHostEntry on $($s.server_name)..."
+		#"Connection to $ServerName succeeded!"
+		#"`tDoing a GetHostEntry on $($s.server_name)..."
 		try {
-			$ServerName = [System.Net.Dns]::gethostentry($server).hostname
+			$ServerHostName = [System.Net.Dns]::gethostentry($ServerName).hostname
 			}	
 		catch [System.SystemException] {
 			Write-Host "Exception connecting to $Server(System.SystemException)" 
@@ -192,6 +200,16 @@ Foreach($s in $servers)
 				Write-Host "Inner Exception: "
 				$_.Exception.InnerException # display the exception's InnerException if it has one
 				}
-			}	
+			}
 	}
+	#Write-Host "`tGetHostEntry Succeeded for: " $ServerHostName " = " $ServerIP
+	$ServerProp = New-Object -TypeName PSObject
+				Add-Member -InputObject $ServerProp -type NoteProperty -Name "ServerName" 	-value $($s.server_name)
+				Add-Member -InputObject $ServerProp -type NoteProperty -Name "ServerIP" 	-value $ServerIP
+				Add-Member -InputObject $ServerProp -type NoteProperty -Name "ServerFQDN" 	-value $ServerHostName
+	$ServerProperties += $ServerProp
 }
+Write-Host "Processed $Count servers!"
+$ServerProperties
+
+$Errors
