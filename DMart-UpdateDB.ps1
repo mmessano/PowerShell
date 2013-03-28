@@ -1,9 +1,9 @@
 ﻿# DMart-UpdateDB.ps1
 
 param( 
-	$SQLServer = 'PSQLRPT24',
+	$SQLServer = 'STGSQLDOC710',
 	$ScriptDir = '\\xfs3\DataManagement\Footprints\30617',
-	$Beta = 3,
+	$Beta = 0,
 	[String[]] $DatabaseList,
 	$FilePrefix = 'Log',
 	[switch]$Log
@@ -18,6 +18,8 @@ $Databases = Invoke-Sqlcmd -ServerInstance $SQLServer -Database PA_DMart -Query 
 
 $DataScripts = Get-ChildItem -Path $ScriptDir -Filter *Data*.sql | sort-object -desc
 $StageScripts = Get-ChildItem -Path $ScriptDir -Filter *Stage*.sql | sort-object -desc
+
+#cls
 
 if ($Databases) {
 	foreach ($i IN $Databases) {

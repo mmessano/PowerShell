@@ -1,5 +1,6 @@
 ﻿# PingTest.ps1
 
+cls
 $Errors.Clear;
 
 $ENV = $args[0]
@@ -17,13 +18,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									ORDER BY server_name
 									"; 
@@ -36,13 +32,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									ORDER BY server_name
 									"; 
@@ -55,13 +46,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									ORDER BY server_name
 									"; 
@@ -74,13 +60,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									ORDER BY server_name
 									"; 
@@ -93,13 +74,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									--AND dns_host_name LIKE 'sql%'
 									ORDER BY server_name
@@ -113,13 +89,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									--AND server_name LIKE 'HOpusSQL%'
 									--OR server_name LIKE 'SQLUTIL%'
@@ -134,13 +105,8 @@ switch ($ENV)
 										, domain
 										, ip_address
 										, dns_host_name
-										, perfmon_path
-										, perfmon_drive
-										, perfmon_start_time
-										, perfmon_end_time
 									FROM t_server s 
 										INNER JOIN t_server_properties sp ON s.server_id = sp.server_id
-										INNER JOIN t_perfmon_properties pp ON s.server_id = pp.server_id
 									WHERE Active = '1'
 									--AND server_name LIKE 'FinRep%'
 									ORDER BY server_name

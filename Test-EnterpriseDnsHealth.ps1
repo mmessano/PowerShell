@@ -722,7 +722,7 @@ param (
                 } 
             } 
         } catch { 
-            LogComment "Get-DhcpServerv6Scope -ComputerName $($dhcpServer) failed" $script:logLevel.Error; 
+            LogComment $("Get-DhcpServerv6Scope -ComputerName $($dhcpServer) failed") $script:logLevel.Error; 
         } 
     } 
  
@@ -780,18 +780,17 @@ param (
                     $resultStream = $resultStream + "MsdcsTestDnsServer:" + $retVal4 + "`n"; 
                     $retVal5 = Test-DnsServerForInputDnsName ("_ldap._tcp.dc._msdcs." + $zone) $dnsServer "SRV"; 
                     $resultStream = $resultStream + "LdapTCPMsdcsResolveDnsName:" + $retVal5 + "`n"; 
-                    if (!(([RetStatus]::Success -eq $retVal3) -and ([RetStatus]::Success -eq $retVal4) ` 
-                        -and ([RetStatus]::Success -eq $retVal5))) { 
+                    if (!(([RetStatus]::Success -eq $retVal3) -and ([RetStatus]::Success -eq $retVal4) -and ([RetStatus]::Success -eq $retVal5))) { 
                         $result = [RetStatus]::Failure; 
                     } 
                 } 
              
                 if ([RetStatus]::Success -eq $result) { 
                     LogComment $("Validation of " + $zone + " passed on DNS Server: " + $dnsServer); 
-                    LogComment $("Validation of " + $zone + " passed on DNS Server: " + $dnsServer) ` 
+                    LogComment $("Validation of " + $zone + " passed on DNS Server: " + $dnsServer) 
                         $script:logLevel.Host;                 
                 } else {                     
-                    LogComment $("Validation of " + $zone + " failed on DNS Server: " + $dnsServer) ` 
+                    LogComment $("Validation of " + $zone + " failed on DNS Server: " + $dnsServer) 
                         $script:logLevel.Error;  
                     LogComment $("Validation output:" + $resultStream) $script:logLevel.Error; 
                     $result = $resultStream; 
