@@ -2,8 +2,8 @@
 
 param( 
 	$SQLServer = 'STGSQLDOC710',
-	$ScriptDir = '\\xfs3\DataManagement\Footprints\30617',
-	$Beta = 0,
+	$ScriptDir = '\\xfs3\DataManagement\Footprints\31177',
+	$Beta = 1,
 	[String[]] $DatabaseList,
 	$FilePrefix = 'Log',
 	[switch]$Log

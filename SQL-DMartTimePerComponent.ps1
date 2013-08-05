@@ -14,7 +14,7 @@ Import-Module SqlServer
 Import-Module Pscx
 
 # Queries
-$Queries = "sel_DMartComponentLogByClient ", "sel_DMartComponentLogByTaskName"
+$Queries = "sel_DMartComponentLogByClient ", "sel_DMartComponentLogByTaskName", "sel_DMartCDC_DataComponentLogByClient", "sel_DMartCDC_DataComponentLogByTaskName"
 Write-host $Queries
 
 $SpreadSheet = ("E:\Dexma\logs\DMartTaskExecutionTimesMatrix-" + (Get-Date -Format ddMMyyyy) + ".xlsx")
@@ -59,19 +59,19 @@ foreach ($Query IN $Queries ) {
 	$Worksheet.UsedRange.EntireColumn.Autofit() | Out-Null
 }
 
-#$List = $Worksheet.ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcRange, $Worksheet.UsedRange, $null, [Microsoft.Office.Interop.Excel.X1YesNoGuess]::xlYes, $null)
-#$List.Name = "Item Table"
+$List = $Worksheet.ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcRange, $Worksheet.UsedRange, $null, [Microsoft.Office.Interop.Excel.X1YesNoGuess]::xlYes, $null)
+$List.Name = "Item Table"
 
-# colorize and auto-fit the cells
-#$LastColumn = ($worksheet.UsedRange.Columns.Count + 1 )
-#for ( $i = 1; $i -lt $LastColumn; $i++) {
-#	$Worksheet.Cells.item(1,$i).Interior.ColorIndex = 15
-#	$Worksheet.Cells.item(1,$i).Font.ColorIndex = 5
-#	$Worksheet.Cells.item(1,$i).Font.Bold = $True
-#	if ($i -gt 3) {
-#		$Worksheet.Cells.item(1,$i).Orientation = 90
-#		}
-#}
+ colorize and auto-fit the cells
+$LastColumn = ($worksheet.UsedRange.Columns.Count + 1 )
+for ( $i = 1; $i -lt $LastColumn; $i++) {
+	$Worksheet.Cells.item(1,$i).Interior.ColorIndex = 15
+	$Worksheet.Cells.item(1,$i).Font.ColorIndex = 5
+	$Worksheet.Cells.item(1,$i).Font.Bold = $True
+	if ($i -gt 3) {
+		$Worksheet.Cells.item(1,$i).Orientation = 90
+		}
+}
 
 #Clean up by deleting the Sheet1, Sheet2, and Sheet3 sheets.
 $Excel.DisplayAlerts = $false
