@@ -19,6 +19,7 @@
 
 Param(
 	[string]$zone,
+	[string]$domain,
 	[string]$dc,
 	[switch]$csv,
 	[switch]$help
@@ -506,7 +507,7 @@ function processAttribute([string]$attrName, [System.Object]$var)
 function usage
 {
 "
-.\dns-dump -zone  [-dc ] [-csv] |
+.\dns-dump -zone  [-dc ] [-domain] [-csv] |
 	   -help
 
 dns-dump will dump, from Active Directory, a particular named zone. 
@@ -516,6 +517,10 @@ Zone contents can vary depending on domain controller (in regards
 to replication and the serial number of the SOA record). By using
 the -dc parameter, you can specify the desired DC to use. Otherwise,
 dns-dump uses the default DC.
+
+The -domain option can be specified if the script is to be used
+against a domain that the current host isn't a part of but has read
+access to.
 
 Usually, output is formatted for display on a workstation. If you
 want CSV (comma-separated-value) output, specify the -csv parameter.
@@ -573,9 +578,16 @@ Example 3:
 		throw "must specify zone name"
 		return
 	}
-
-	$root = [ADSI]"LDAP://RootDSE"
-	$defaultNC = $root.defaultNamingContext
+	
+	if ($domain)
+	{
+		$defaultNC = "DC=" + $domain.replace(".",",DC=")
+	}
+	else
+	{
+		$root = [ADSI]"LDAP://RootDSE"
+		$defaultNC = $root.defaultNamingContext	
+	}
 
 	$dn = "LDAP://"
 	if ($dc) { $dn += $dc + "/" }
