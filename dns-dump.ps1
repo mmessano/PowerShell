@@ -22,6 +22,8 @@ Param(
 	[string]$domain,
 	[string]$dc,
 	[switch]$csv,
+	[switch]$forest,
+	[switch]$legacy,
 	[switch]$help
 )
 
@@ -591,8 +593,17 @@ Example 3:
 
 	$dn = "LDAP://"
 	if ($dc) { $dn += $dc + "/" }
-	$dn += "DC=" + $zone + ",CN=MicrosoftDNS,CN=System," + $defaultNC
-
+	
+	if ($legacy) {
+		$dn += "DC=" + $zone + ",CN=MicrosoftDNS,CN=System," + $defaultNC
+	}
+	elseif ($forest) {
+		$dn += "DC=" + $zone + ",CN=MicrosoftDNS,DC=ForestDnsZones," + $defaultNC
+	}
+	else {
+		$dn += "DC=" + $zone + ",CN=MicrosoftDNS,DC=DomainDnsZones," + $defaultNC
+	}
+	
 	$obj = [ADSI]$dn
 	if ($obj.name)
 	{
